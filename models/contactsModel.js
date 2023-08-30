@@ -38,7 +38,7 @@ const addContact = async (body) => {
     id: nanoid(),
     ...body,
   };
-  console.log(newContact);
+
   contacts.push(newContact);
   await updateContacts(contacts);
   return newContact;

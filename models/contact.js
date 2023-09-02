@@ -45,7 +45,7 @@ const existingContactSchema = Joi.object({
 });
 
 const updateFavoriteSchema = Joi.object({
-  favorite: Joi.boolean().required,
+  favorite: Joi.boolean().required(),
 });
 
 const Contact = model("contact", contactSchema);

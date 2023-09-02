@@ -3,13 +3,13 @@ const { Contact } = require("../models/contact");
 const { ApiError, ctrlWrapper } = require("../helpers");
 
 const listContacts = async (req, res) => {
-  const result = await Contact.find();
+  const result = await Contact.find({}, "name email phone favorite");
   res.json(result);
 };
 
 const getContactById = async (req, res) => {
   const { contactId } = req.params;
-  // const result = await Contact.findOne({ _id: contactId });
+
   const result = await Contact.findById(contactId);
 
   if (!result) {
@@ -29,9 +29,14 @@ const removeContactById = async (req, res) => {
 
 const updateContactById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
-    new: true,
-  });
+  const { name, email, phone, favorite } = req.body;
+  const result = await Contact.findByIdAndUpdate(
+    contactId,
+    { name, email, phone, favorite },
+    {
+      new: true,
+    }
+  );
   if (!result) {
     throw ApiError(404, "Not found");
   }

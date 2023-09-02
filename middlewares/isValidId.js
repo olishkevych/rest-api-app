@@ -3,9 +3,9 @@ const { isValidObjectId } = require("mongoose");
 const { ApiError } = require("../helpers");
 
 const isValidId = (req, res, next) => {
-  const { id } = req.params;
-  if (!isValidObjectId(id)) {
-    next(ApiError(400, `${id} is not valid`));
+  const { contactId } = req.params;
+  if (!isValidObjectId(contactId)) {
+    next(ApiError(400, `${contactId} is not valid`));
   }
   next();
 };

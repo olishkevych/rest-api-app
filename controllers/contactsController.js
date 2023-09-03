@@ -1,15 +1,16 @@
-const contacts = require("../models/contactsModel");
+const { Contact } = require("../models/contact");
 
 const { ApiError, ctrlWrapper } = require("../helpers");
 
 const listContacts = async (req, res) => {
-  const result = await contacts.listContacts();
+  const result = await Contact.find({}, "name email phone favorite");
   res.json(result);
 };
 
 const getContactById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.getContactById(contactId);
+
+  const result = await Contact.findById(contactId);
 
   if (!result) {
     throw ApiError(404, "Not found");
@@ -19,7 +20,7 @@ const getContactById = async (req, res) => {
 
 const removeContactById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.removeContact(contactId);
+  const result = await Contact.findByIdAndDelete(contactId);
   if (!result) {
     throw ApiError(404, "Not found");
   }
@@ -27,13 +28,15 @@ const removeContactById = async (req, res) => {
 };
 
 const updateContactById = async (req, res) => {
-  const { name, email, phone } = req.body;
   const { contactId } = req.params;
-  const result = await contacts.updateContact(contactId, {
-    name,
-    email,
-    phone,
-  });
+  const { name, email, phone, favorite } = req.body;
+  const result = await Contact.findByIdAndUpdate(
+    contactId,
+    { name, email, phone, favorite },
+    {
+      new: true,
+    }
+  );
   if (!result) {
     throw ApiError(404, "Not found");
   }
@@ -41,9 +44,19 @@ const updateContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const { name, email, phone } = req.body;
-  const result = await contacts.addContact({ name, email, phone });
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
+};
+
+const updateStatusContact = async (req, res) => {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw ApiError(404, "Not found");
+  }
+  res.json(result);
 };
 
 module.exports = {
@@ -52,4 +65,5 @@ module.exports = {
   addContact: ctrlWrapper(addContact),
   updateContactById: ctrlWrapper(updateContactById),
   removeContactById: ctrlWrapper(removeContactById),
+  updateStatusContact: ctrlWrapper(updateStatusContact),
 };

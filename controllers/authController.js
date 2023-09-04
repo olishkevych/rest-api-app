@@ -4,6 +4,7 @@ const { ApiError, ctrlWrapper } = require("../helpers");
 
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+
 const { SECRET_KEY } = process.env;
 
 const registerUser = async (req, res) => {

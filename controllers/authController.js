@@ -17,7 +17,9 @@ const registerUser = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({ ...req.body, password: hashedPassword });
-  res.status(201).json({ email: newUser.email, name: newUser.name });
+  res
+    .status(201)
+    .json({ email: newUser.email, subscription: newUser.subscription });
 };
 
 const loginUser = async (req, res) => {
@@ -34,19 +36,35 @@ const loginUser = async (req, res) => {
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "8h" });
   await User.findByIdAndUpdate(user._id, { token });
 
-  res.json({ token });
+  res.json({
+    token,
+    user: { email: user.email, subscription: user.subscription },
+  });
 };
 
 const getCurrentUser = async (req, res) => {
-  const { email, name } = req.user;
-  res.json({ email, name });
+  const { email, subscription } = req.user;
+  res.json({ email, subscription });
 };
 
 const logoutUser = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
-  res.json({ message: "Logged out" });
+  res.status(204).json({});
+};
+
+const updateSubscription = async (req, res) => {
+  const user = req.user;
+
+  const result = await User.findByIdAndUpdate(user._id, req.body, {
+    new: true,
+  });
+  if (!result) {
+    throw ApiError(404, "User not found");
+  }
+  const { name, subscription } = result;
+  res.json({ name, subscription });
 };
 
 module.exports = {
@@ -54,4 +72,5 @@ module.exports = {
   loginUser: ctrlWrapper(loginUser),
   getCurrentUser: ctrlWrapper(getCurrentUser),
   logoutUser: ctrlWrapper(logoutUser),
+  updateSubscription: ctrlWrapper(updateSubscription),
 };

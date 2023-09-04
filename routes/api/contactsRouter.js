@@ -8,7 +8,7 @@ const ctrl = require("../../controllers/contactsController");
 
 router.get("/", authenticate, ctrl.listContacts);
 
-router.get("/:contactId", authenticate, isValidId, ctrl.getContactById);
+router.get("/:contactId", isValidId, ctrl.getContactById);
 
 router.post(
   "/",

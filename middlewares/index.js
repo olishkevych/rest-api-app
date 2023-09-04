@@ -1,5 +1,5 @@
-const validateContacts = require("./contactsValidation.js");
+const validateBody = require("./validateBody.js");
 const isValidId = require("./isValidId.js");
 const authenticate = require("./authenticate.js");
 
-module.exports = { validateContacts, isValidId, authenticate };
+module.exports = { validateBody, isValidId, authenticate };

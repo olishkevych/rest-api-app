@@ -1,6 +1,5 @@
-const { ApiError } = require("../helpers");
 const jwt = require("jsonwebtoken");
-
+const { ApiError } = require("../helpers");
 const { User } = require("../models/user");
 
 const { SECRET_KEY } = process.env;
@@ -20,7 +19,7 @@ const authenticate = async (req, res, next) => {
     req.user = user;
     next();
   } catch {
-    next(ApiError(401));
+    next(ApiError(401), "Authentication failed");
   }
 };
 

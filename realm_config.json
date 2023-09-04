@@ -1,7 +1,7 @@
 {
-    "app_id": "application-0-yeyqm",
+    "app_id": "contacts-app-qzbgk",
     "config_version": 20210101,
-    "name": "Application-0",
+    "name": "contacts-app",
     "location": "DE-FF",
     "provider_region": "aws-eu-central-1",
     "deployment_model": "LOCAL"

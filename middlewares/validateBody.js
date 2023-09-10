@@ -1,6 +1,6 @@
 const { ApiError } = require("../helpers");
 
-const validateContacts = (schema) => {
+const validateBody = (schema) => {
   const func = (req, res, next) => {
     const { error } = schema.validate(req.body);
     if (error) {
@@ -11,4 +11,4 @@ const validateContacts = (schema) => {
   return func;
 };
 
-module.exports = validateContacts;
+module.exports = validateBody;

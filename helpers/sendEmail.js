@@ -12,12 +12,7 @@ const nodemailerConfig = {
   },
 };
 const transport = nodemailer.createTransport(nodemailerConfig);
-// const email = {
-//   to: "",
-//   from: "natasha-o@ukr.net",
-//   subject: "",
-//   html: "",
-// };
+
 const sendEmail = (email) =>
   transport
     .sendMail(email)

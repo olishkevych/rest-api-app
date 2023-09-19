@@ -11,6 +11,14 @@ router.post(
   ctrl.registerUser
 );
 
+router.get("/verify/:verificationToken", ctrl.verifyEmail);
+
+router.post(
+  "/users/verify",
+  validateBody(schemas.userVerificationSchema),
+  ctrl.resendVerificationEmail
+);
+
 router.patch(
   "/avatar",
   authenticate,

@@ -33,6 +33,7 @@ const registerUser = async (req, res) => {
 
   const verifyEmail = {
     to: email,
+    from: "natasha-o@ukr.net",
     subject: "Verify your email",
     html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click here to verify your email</a>`,
   };
@@ -65,11 +66,51 @@ const updateAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken: verificationToken });
+
+  if (!user) {
+    throw ApiError(401, "User not found");
+  }
+  await User.findOneAndUpdate(user._id, {
+    verify: true,
+    verificationToken: "",
+  });
+
+  res.json({ message: "Verification successful" });
+};
+
+const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw ApiError(401, "User not found");
+  }
+  if (user.verify) {
+    throw ApiError(400, "Verification has already been passed");
+  }
+
+  const verifyEmail = {
+    to: email,
+    from: "natasha-o@ukr.net",
+    subject: "Verify your email",
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click here to verify your email</a>`,
+  };
+
+  await sendEmail(verifyEmail);
+  res.json({ message: "Verification email sent" });
+};
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
     throw ApiError(401, "Email or password invalid");
+  }
+
+  if (!user.verify) {
+    throw ApiError(401, "Email not verified");
   }
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
@@ -117,4 +158,6 @@ module.exports = {
   logoutUser: ctrlWrapper(logoutUser),
   updateSubscription: ctrlWrapper(updateSubscription),
   updateAvatar: ctrlWrapper(updateAvatar),
+  verifyEmail: ctrlWrapper(verifyEmail),
+  resendVerificationEmail: ctrlWrapper(resendVerificationEmail),
 };

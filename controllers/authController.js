@@ -4,12 +4,13 @@ const fs = require("fs/promises");
 const path = require("path");
 const gravatar = require("gravatar");
 const Jimp = require("jimp");
-const { ApiError, ctrlWrapper } = require("../helpers");
+const { ApiError, ctrlWrapper, sendEmail } = require("../helpers");
+const { nanoid } = require("nanoid");
 
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, BASE_URL } = process.env;
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -22,12 +23,22 @@ const registerUser = async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
-
+  const verificationToken = nanoid();
   const newUser = await User.create({
     ...req.body,
     password: hashedPassword,
     avatarURL,
+    verificationToken,
   });
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify your email",
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click here to verify your email</a>`,
+  };
+
+  await sendEmail(verifyEmail);
+
   res
     .status(201)
     .json({ email: newUser.email, subscription: newUser.subscription });

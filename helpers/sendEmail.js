@@ -1,13 +1,13 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const { MAIL_PASSWORD } = process.env;
+const { MAIL_PASSWORD, EMAIL_USER, EMAIL_HOST, EMAIL_PORT } = process.env;
 
 const nodemailerConfig = {
-  host: "smtp.ukr.net",
-  port: 465,
+  host: EMAIL_HOST,
+  port: EMAIL_PORT,
   secure: true,
   auth: {
-    user: "natasha-o@ukr.net",
+    user: EMAIL_USER,
     pass: MAIL_PASSWORD,
   },
 };
